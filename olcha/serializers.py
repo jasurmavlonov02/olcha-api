@@ -6,7 +6,7 @@ from olcha.models import Category, Image, Group
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ['id', 'image', 'is_primary']
+        fields = ['id', 'image', 'is_primary','product','group','category']
 
 
 class GroupModelSerializer(serializers.ModelSerializer):
@@ -32,30 +32,13 @@ class CategoryModelSerializer(serializers.ModelSerializer):
 
     def foo(self, instance):
         image = Image.objects.filter(category=instance, is_primary=True).first()
-
+        request = self.context.get('request')
         if image:
-            serializer = ImageSerializer(image)
-            return serializer.data.get('image')
+            image_url = image.image.url
+            return request.build_absolute_uri(image_url)
+
         return None
 
     class Meta:
         model = Category
         fields = ['id', 'category_name', 'slug', 'category_image', 'groups']
-
-# class GroupSerializer(serializers.ModelSerializer):
-#     category_name = serializers.CharField(source='category.category_name')
-#     category_id = serializers.IntegerField(source='category.id')
-#
-#     image = serializers.SerializerMethodField()
-#
-#     def get_image(self, instance):
-#         image = Image.objects.filter(group=instance, is_primary=True).first()
-#
-#         if image:
-#             serializer = ImageSerializer(image)
-#             return serializer.data.get('image')
-#         return None
-#
-#     class Meta:
-#         model = Group
-#         fields = ['id', 'group_name', 'slug', 'category_name', 'category_id', 'image']
