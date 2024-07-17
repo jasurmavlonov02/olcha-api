@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from olcha.models import Category, Group, Image
-from olcha.serializers import CategoryModelSerializer, GroupModelSerializer, ImageSerializer
+from olcha.models import Category, Group, Image, Product
+from olcha.serializers import CategoryModelSerializer, GroupModelSerializer, ImageSerializer, ProductSerializer
 from rest_framework import generics
 
 
@@ -72,4 +72,11 @@ class ImageListApiView(APIView):
     def get(self, request):
         images = Image.objects.all()
         serializers = ImageSerializer(images, many=True, context={'request': request})
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
+
+class ProductListApiView(APIView):
+    def get(self, request):
+        products = Product.objects.all()
+        serializers = ProductSerializer(products, many=True, context={'request': request})
         return Response(serializers.data, status=status.HTTP_200_OK)

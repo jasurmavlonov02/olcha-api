@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.text import slugify
 
@@ -28,6 +29,7 @@ class Category(BaseModel):
 
     class Meta:
         verbose_name_plural = 'Categories'
+        db_table = 'categories'
 
 
 class Group(BaseModel):
@@ -44,24 +46,19 @@ class Group(BaseModel):
     def __str__(self):
         return self.group_name
 
+    class Meta:
+        db_table = 'groups'
+
 
 class Product(BaseModel):
-    class RatingChoices(models.IntegerChoices):
-        ZERO = 0
-        ONE = 1
-        TWO = 2
-        THREE = 3
-        FOUR = 4
-        FIVE = 5
-
     product_name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True)
-    rating = models.IntegerField(choices=RatingChoices.choices, default=RatingChoices.ZERO.value, null=True, blank=True)
     discount = models.IntegerField(default=0)
     slug = models.SlugField(null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='products')
+    users_like = models.ManyToManyField(User, related_name='likes', blank=True, db_table='users_like')
 
     @property
     def discounted_price(self):
@@ -83,6 +80,9 @@ class Product(BaseModel):
     def __str__(self):
         return self.product_name
 
+    class Meta:
+        db_table = 'products'
+
 
 class Image(models.Model):
     image = models.ImageField(upload_to='images/')
@@ -95,3 +95,22 @@ class Image(models.Model):
 
     # def get_absolute_url(self):
     #     return self.image.url
+
+    class Meta:
+        db_table = 'images'
+
+
+class Comment(BaseModel):
+    class RatingChoices(models.IntegerChoices):
+        ZERO = 0
+        ONE = 1
+        TWO = 2
+        THREE = 3
+        FOUR = 4
+        FIVE = 5
+
+    message = models.TextField()
+    rating = models.IntegerField(choices=RatingChoices.choices, default=RatingChoices.ZERO.value, null=True, blank=True)
+    file = models.FileField(upload_to='comments/', null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

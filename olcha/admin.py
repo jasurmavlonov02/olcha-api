@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group as auth_group
 
-from olcha.models import Category, Image, Group
+from olcha.models import Category, Image, Group, Product
 
 
 # Register your models here.
@@ -22,3 +22,8 @@ class GroupModelAdmin(admin.ModelAdmin):
     list_display = ['group_name', 'slug']
     prepopulated_fields = {'slug': ('group_name',)}
 
+
+@admin.register(Product)
+class ProductModelAdmin(admin.ModelAdmin):
+    list_display = ['product_name', 'slug']
+    prepopulated_fields = {'slug': ('product_name',)}
