@@ -114,3 +114,26 @@ class Comment(BaseModel):
     file = models.FileField(upload_to='comments/', null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Attribute(models.Model):
+    attribute_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.attribute_name
+
+
+class AttributeValue(models.Model):
+    attribute_value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.attribute_value
+
+
+class ProductAttribute(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    key = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    value = models.ForeignKey(AttributeValue, on_delete=models.CASCADE)
+
+
+# attributes = ProductAttribute.objects.filter()
